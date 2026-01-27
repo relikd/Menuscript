@@ -92,8 +92,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 		panel.allowsMultipleSelection = false
 		panel.begin {
 			if $0 == .OK {
-				UserDefaults.standard.set(panel.url, forKey: "storage")
 				self.statusItem.menu?.title = panel.url!.path
+				// update user defaults
+				UserDefaults.standard.set(panel.url, forKey: "storage")
+				// update settings window
+				let pth = self.settingsWindow?.contentView!.viewWithTag(201) as? NSPathControl
+				pth?.url = panel.url
 			}
 		}
 	}
@@ -138,6 +142,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 		pth.allowedTypes = ["public.folder"]
 		pth.pathStyle = .standard
 		pth.url = resolvedStorageURL()
+		pth.tag = 201
 		view.addSubview(pth)
 
 		let chg = NSButton(title: "Change", target: self, action: #selector(selectStoragePath))
