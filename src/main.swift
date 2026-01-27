@@ -1,7 +1,6 @@
 #!/usr/bin/env swift
 import AppKit
 import Cocoa
-import SwiftUI
 
 class FlippedView: NSView {
 	override var isFlipped: Bool { true }
