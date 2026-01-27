@@ -52,4 +52,4 @@ clean:
 .PHONY: release
 release: VERSION=$(call PLIST,CFBundleShortVersionString)
 release: Menuscript.app
-	tar -czf "Menuscript_v${VERSION}.tar.gz" Menuscript.app
+	tar -czf "Menuscript_${VERSION}.tar.gz" Menuscript.app
