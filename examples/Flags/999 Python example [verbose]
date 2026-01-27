@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+print()
+print("=> 2^8 is", 2**8)
+print()

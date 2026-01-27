@@ -1,0 +1,8 @@
+#!/bin/sh
+prev=$(defaults read com.apple.finder CreateDesktop)
+if [ "$prev" = 0 ]; then
+	flag=1
+else
+	flag=0
+fi
+defaults write com.apple.finder CreateDesktop $flag && killall Finder

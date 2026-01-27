@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="lg1" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#f9f9f9"/>
+      <stop offset="1" stop-color="#c3c3c3"/>
+    </linearGradient>
+    <linearGradient id="lg2" x2="0%" y2="100%">
+      <stop offset="0" stop-color="#7C93E8"/>
+      <stop offset="1" stop-color="#395DE0"/>
+    </linearGradient>
+    <clipPath id="mask">
+       <path d="M0,18q0,-18,18,-18h64q18,0,18,18v64q0,18,-18,18h-64q-18,0,-18,-18Z" transform="scale(10.24)"/>
+    </clipPath>
+  	 <style>text{font:500 260px "SF Pro Text", sans-serif}</style>
+  </defs>
+  <g clip-path="url(#mask)" transform="translate(104,104) scale(0.797)">
+    <rect id="bg" width="1024" height="1024" fill="#fdfdfd"/>
+    <rect id="menu" width="1024" height="331" fill="url(#lg1)"/>
+    <rect id="menu_line" y="331" width="1024" height="20" fill="#0e0e0e"/>
+    <rect id="blue" x="512" width="402" height="331" fill="url(#lg2)"/>
+    <rect id="blue_line" x="512" y="331" width="402" height="20" fill="#2847C5"/>
+    <g transform="translate(587,40) scale(0.251)">
+    	<path id="_x2318_" d="M335,335m-145,0a145,145,0,1,1,145,-145v620a145,145,0,1,1,-145,-145h620a145,145,0,1,1,-145,145v-620a145,145,0,1,1,145,145Z" stroke="#fff" stroke-width="90" fill="transparent"/>
+    </g>
+    <text x="72" y="590">run.sh</text>
+    <rect id="sep" y="672" width="1024" height="20" fill="#ccc"/>
+    <text x="72" y="931">Quit</text>
+  </g>
+</svg>
