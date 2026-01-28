@@ -66,17 +66,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 		(sender.representedObject as! Entry).run()
 	}
 
+	// MARK: - Helper
+
+	private func resFile(_ name: String, _ ext: String?) -> URL {
+		// if run via .app bundle
+		return Bundle.main.url(forResource: name, withExtension: ext)
+			// if calling swift directly
+			?? URL(fileURLWithPath: #file + "/../../" + name + (ext == nil ? "" : ("." + ext!)))
+	}
+
 	// MARK: - Manage storage path
 
 	private func resolvedStorageURL() -> URL {
-		userStorageURL()
-			// if run via .app bundle
-			?? Bundle.main.url(forResource: "examples", withExtension: nil)
-			// if calling swift directly
-			?? URL(string: "file://" + FileManager.default.currentDirectoryPath + "/" + #file)!
-			.deletingLastPathComponent()
-			.deletingLastPathComponent()
-			.appendingPathComponent("examples")
+		userStorageURL() ?? resFile("examples", nil)
 	}
 
 	private func userStorageURL() -> URL? {
@@ -204,7 +206,7 @@ struct Entry {
 		var rv: [Entry] = []
 		for url
 			in (try? FileManager.default.contentsOfDirectory(
-				at: URL(string: path)!,
+				at: URL(fileURLWithPath: path),
 				includingPropertiesForKeys: [.isDirectoryKey, .isExecutableKey])) ?? []
 		{
 			if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path) {
