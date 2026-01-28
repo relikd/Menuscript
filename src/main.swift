@@ -72,7 +72,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 		// if run via .app bundle
 		return Bundle.main.url(forResource: name, withExtension: ext)
 			// if calling swift directly
-			?? URL(fileURLWithPath: #file + "/../../" + name + (ext == nil ? "" : ("." + ext!)))
+			?? URL(fileURLWithPath: #file + "/../../res/" + name + (ext == nil ? "" : ("." + ext!)))
 	}
 
 	// MARK: - Manage storage path
@@ -268,7 +268,7 @@ struct Entry {
 	}
 }
 
-extension Entry : Comparable {
+extension Entry: Comparable {
 	static func < (lhs: Entry, rhs: Entry) -> Bool {
 		return (lhs.order, lhs.title) < (rhs.order, rhs.title)
 	}

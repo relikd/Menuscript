@@ -12,7 +12,7 @@ A menu bar script executor.
 
 Menuscript adds a status bar menu to call custom (user defined) scripts.
 The app reads the content of a directory and adds all executable files to the status menu.
-The screenshot above represents the content of the [examples](examples/) directory.
+The screenshot above represents the content of the [res/examples](res/examples/) directory.
 
 
 ## Usage
