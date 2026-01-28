@@ -20,10 +20,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 	private func initStatusIcon() {
 		self.statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-		self.statusItem.button?.title = "⌘"
-		// self.statusItem.button?.image = NSImage.statusIcon
+		if let img = statusIcon() {
+			self.statusItem.button?.image = img
+		} else {
+			self.statusItem.button?.title = "⌘" // cant load svg (<10.15)
+		}
 		self.statusItem.menu = NSMenu(title: resolvedStorageURL().path)
 		self.statusItem.menu?.delegate = self
+	}
+
+	private func statusIcon() -> NSImage? {
+		let img = NSImage(contentsOf: resFile("status", "svg"))
+		img?.isTemplate = true
+		img?.size = NSMakeSize(14, 14)
+		return img
 	}
 
 	func menuDidClose(_ menu: NSMenu) {
