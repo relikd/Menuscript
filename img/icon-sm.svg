@@ -21,7 +21,7 @@
     <rect id="blue" x="500" width="600" height="470" fill="url(#lg2)"/>
     <rect id="blue_line" x="500" y="470" width="600" height="30" fill="#2847C5"/>
     <g transform="translate(562.5,62)scale(0.35)">
-    	<path id="_x2318_" d="M335,335m-145,0a145,145,0,1,1,145,-145v620a145,145,0,1,1,-145,-145h620a145,145,0,1,1,-145,145v-620a145,145,0,1,1,145,145Z" stroke="#fff" stroke-width="90" fill="transparent"/>
+    	<path id="_x2318_" d="M335,335m-145,0a145,145,0,1,1,145,-145v620a145,145,0,1,1,-145,-145h620a145,145,0,1,1,-145,145v-620a145,145,0,1,1,145,145Z" stroke="#fff" stroke-width="90" fill="none"/>
     </g>
     <text x="75" y="840">run.sh</text>
   </g>
