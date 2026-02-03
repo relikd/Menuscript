@@ -43,6 +43,10 @@ And of course, you can always write a script wrapper to call something else.
 
 There are a few ways to modify the menu structure:
 
+#### Menu Icon
+
+A subdirectory can have a custom icon if the folder contains an image file named `icon.X` (where `X` is one of: `svg`, `png`, `jpg`, `jpeg`, `gif`, `ico`).
+
 #### Sort Order
 
 By default, menu items are sorted in alphabetic order (case-insensitive).
@@ -60,8 +64,9 @@ Flags are defined by adding a text snippet to the filename.
 These constant strings are defined:
 
 - __[txt]__: Execute the script and dump all output in a new `TextEdit` window (useful for reports or log files, etc.)
-- __[verbose]__: Usually, script files are executed in the background. With this flag, a new `Terminal` window will open and show the activley running script (useful for continuous output like `top` or `netstat -w`, etc.)
+- __[verbose]__: Usually, script files are executed in the background.
+  With this flag, a new `Terminal` window will open and show the activley running script (useful for continuous output like `top` or `netstat -w`, etc.)
+- __[inactive]__: Make menu item non-clickable (will appear greyed out)
+- __[ignore]__: Do not show menu item (no menu entry)
 
-#### Menu Icon
 
-A subdirectory can have a custom icon if the folder contains an image file named `icon.X` (where `X` is one of: `svg`, `png`, `jpg`, `jpeg`, `gif`, `ico`).

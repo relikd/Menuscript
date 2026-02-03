@@ -53,6 +53,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 	func menuNeedsUpdate(_ menu: NSMenu) {
 		for entry in listDir(menu.title) {
+			if entry.action == .Ignore {
+				continue
+			}
 			let itm = menu.addItem(withTitle: entry.title, action: nil, keyEquivalent: "")
 			itm.representedObject = entry
 			itm.image = entry.icon()
@@ -60,7 +63,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 			if entry.isDir {
 				itm.submenu = NSMenu(title: entry.url.path)
 				itm.submenu?.delegate = self
-			} else {
+			} else if entry.action != .Inactive {
 				itm.action = #selector(menuItemCallback)
 			}
 		}
@@ -248,11 +251,15 @@ enum ActionFlag {
 	case Default
 	case Text
 	case Verbose
+	case Inactive
+	case Ignore
 
 	static func from(_ filename: inout String) -> Self {
 		for (key, flag) in [
 			"[txt]": ActionFlag.Text,
 			"[verbose]": .Verbose,
+			"[inactive]": .Inactive,
+			"[ignore]": .Ignore,
 		] {
 			if filename.contains(key) {
 				filename = filename
