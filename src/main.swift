@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 	}
 
 	func menuNeedsUpdate(_ menu: NSMenu) {
-		for entry in Entry.listDir(menu.title) {
+		for entry in listDir(menu.title) {
 			let itm = menu.addItem(withTitle: entry.title, action: nil, keyEquivalent: "")
 			itm.representedObject = entry
 			itm.image = entry.icon()
@@ -73,7 +73,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 	}
 
 	@objc private func menuItemCallback(sender: NSMenuItem) {
-		(sender.representedObject as! Entry).run()
+		let entry = sender.representedObject as! Entry
+		let cmd = Exec(file: entry.url, args: nil)
+		if entry.action == .Text {
+			cmd.editor()
+		} else {
+			cmd.run(verbose: entry.action == .Verbose)
+		}
 	}
 
 	// MARK: - Helper
@@ -170,18 +176,100 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 	}
 }
 
-// MARK: - A menu item
 
-struct Entry {
-	enum Flags {
-		case Verbose
-		case Text
+// MARK: - Command executor
+
+struct Exec {
+	let file: URL
+	var args: [String]? = nil
+
+	private func prepare() -> Process {
+		let proc = Process()
+		// proc.environment = ["HOME": "$HOME"]
+		proc.currentDirectoryURL = self.file.deletingLastPathComponent()
+		proc.executableURL = self.file
+		proc.arguments = args
+		return proc
 	}
 
+	private func toPipe() -> Pipe {
+		let proc = prepare()
+		let io = Pipe()
+		proc.standardOutput = io
+		proc.standardError = io
+		proc.launch()
+		return io
+	}
+
+	/// run command (ignoring output)
+	func run(verbose: Bool = false) {
+		let proc = prepare()
+		if verbose {
+			proc.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+			proc.arguments = [self.file.path]
+		}
+		proc.launch()
+	}
+
+	/// open result in default text editor
+	func editor() {
+		let p2 = Process()
+		p2.launchPath = "/usr/bin/open"
+		p2.arguments = ["-f"]
+		p2.standardInput = toPipe()
+		p2.launch()
+	}
+
+	/// run command and return output
+	func read() -> String {
+		let data = toPipe().fileHandleForReading.readDataToEndOfFile()
+		return String(data: data, encoding: .utf8) ?? ""
+	}
+}
+
+
+// MARK: - static methods
+
+func listDir(_ path: String) -> [Entry] {
+	let target = URL(fileURLWithPath: path)
+	var rv: [Entry] = []
+	for url in (try? FileManager.default.contentsOfDirectory(at: target, includingPropertiesForKeys: [.isDirectoryKey, .isExecutableKey])) ?? [] {
+		if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path) {
+			rv.append(Entry(url))
+		}
+	}
+	return rv.sorted()
+}
+
+
+// MARK: - A menu item
+
+enum ActionFlag {
+	case Default
+	case Text
+	case Verbose
+
+	static func from(_ filename: inout String) -> Self {
+		for (key, flag) in [
+			"[txt]": ActionFlag.Text,
+			"[verbose]": .Verbose,
+		] {
+			if filename.contains(key) {
+				filename = filename
+					.replacingOccurrences(of: key, with: "")
+					.replacingOccurrences(of: "  ", with: " ")
+				return flag
+			}
+		}
+		return Default
+	}
+}
+
+struct Entry {
 	let order: Int
-	let title: String
-	let flags: [Flags]
 	let url: URL
+	let title: String
+	let action: ActionFlag
 
 	var isDir: Bool { url.hasDirectoryPath }
 
@@ -189,41 +277,18 @@ struct Entry {
 		self.url = url
 		// TODO: remove file extension?
 		var fname = url.lastPathComponent
+		var customOrder = 100
 		var idx = fname.firstIndex { !$0.isWholeNumber } ?? fname.startIndex
 		// sort order
 		if let order = Int(fname[..<idx]) {
-			self.order = order
+			customOrder = order
 			idx = fname[idx..<fname.endIndex].firstIndex { !$0.isWhitespace } ?? idx
 			idx = fname[idx..<fname.endIndex].firstIndex { !$0.isPunctuation } ?? idx
 			fname = String(fname[idx..<fname.endIndex])
-		} else {
-			self.order = 100
 		}
-		// flags
-		var flags: [Flags] = []
-		for (key, flag) in ["verbose": Flags.Verbose, "txt": .Text] {
-			if fname.contains("[" + key + "]") {
-				fname = fname.replacingOccurrences(of: "[" + key + "]", with: "")
-					.replacingOccurrences(of: "  ", with: " ")
-				flags.append(flag)
-			}
-		}
-		self.flags = flags
+		self.order = customOrder
+		self.action = ActionFlag.from(&fname)
 		self.title = fname.trimmingCharacters(in: .whitespaces)
-	}
-
-	static func listDir(_ path: String) -> [Entry] {
-		var rv: [Entry] = []
-		for url
-			in (try? FileManager.default.contentsOfDirectory(
-				at: URL(fileURLWithPath: path),
-				includingPropertiesForKeys: [.isDirectoryKey, .isExecutableKey])) ?? []
-		{
-			if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path) {
-				rv.append(Entry(url))
-			}
-		}
-		return rv.sorted()
 	}
 
 	func icon() -> NSImage? {
@@ -243,38 +308,6 @@ struct Entry {
 		}
 		img?.size = NSMakeSize(16, 16)
 		return img
-	}
-
-	func run() {
-		let proc = Process()
-		proc.currentDirectoryURL = self.url.deletingLastPathComponent()
-		// proc.environment = ["HOME": "$HOME"]
-		if self.flags.contains(.Verbose) {
-			proc.launchPath = "/usr/bin/open"
-			proc.arguments = [self.url.path]
-		} else {
-			proc.executableURL = self.url
-		}
-
-		if self.flags.contains(.Text) {
-			// open result in default text editor
-			let io = Pipe()
-			proc.standardOutput = io
-			proc.standardError = io
-
-			proc.launch()
-
-			let p2 = Process()
-			p2.launchPath = "/usr/bin/open"
-			p2.arguments = ["-f"]
-			p2.standardInput = io
-			p2.launch()
-
-			// let data = io.fileHandleForReading.readDataToEndOfFile()
-			// let output = String(data: data, encoding: .utf8) ?? ""
-		} else {
-			proc.launch()
-		}
 	}
 }
 
