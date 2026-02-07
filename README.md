@@ -36,7 +36,7 @@ Apart from that, there is no limitation on the script language.
 You can use Bash, Python, Swift, Ruby, whatever.
 And of course, you can always write a script wrapper to call something else.
 
-=> If you can call the script with `open` (e.g., `open myscript`), it will work in the status menu too.
+=> If you can run the script with `open` (e.g., `open myscript`), it will work in the status menu too.
 
 
 ### Configuration
@@ -46,6 +46,7 @@ There are a few ways to modify the menu structure:
 #### Menu Icon
 
 A subdirectory can have a custom icon if the folder contains an image file named `icon.X` (where `X` is one of: `svg`, `png`, `jpg`, `jpeg`, `gif`, `ico`, `icns`).
+For menu items, the icon file should be named exactly like the script file plus one of the icon extensions (e.g., `cmd.sh` -> `cmd.sh.png`).
 
 #### Sort Order
 

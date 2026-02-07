@@ -317,18 +317,20 @@ struct Entry {
 
 	func icon() -> NSImage? {
 		var img: NSImage? = nil
-		if isDir {
+		if !hasDynParent {
+			let basePath = self.isDir ? self.url.appendingPathComponent("icon") : self.url
 			for ext in ["svg", "png", "jpg", "jpeg", "gif", "ico", "icns"] {
-				let iconPath = self.url.appendingPathComponent("icon." + ext)
+				let iconPath = basePath.appendingPathExtension(ext)
 				if FileManager.default.fileExists(atPath: iconPath.path) {
 					img = NSImage(contentsOf: iconPath)
 					break
 				}
 			}
-			if img == nil {
+			if img == nil, self.isDir {
 				img = NSImage(named: NSImage.folderName)
 			}
-		} else if action == .Dynamic || hasDynParent {
+		}
+		if img == nil, action == .Dynamic || hasDynParent {
 			let cmd = Exec(file: self.url, env: ["ACTION": "icon", "ITEM": hasDynParent ? self.title : ""])
 			img = NSImage(data: cmd.readData())
 		}
