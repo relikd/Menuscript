@@ -45,7 +45,7 @@ There are a few ways to modify the menu structure:
 
 #### Menu Icon
 
-A subdirectory can have a custom icon if the folder contains an image file named `icon.X` (where `X` is one of: `svg`, `png`, `jpg`, `jpeg`, `gif`, `ico`).
+A subdirectory can have a custom icon if the folder contains an image file named `icon.X` (where `X` is one of: `svg`, `png`, `jpg`, `jpeg`, `gif`, `ico`, `icns`).
 
 #### Sort Order
 

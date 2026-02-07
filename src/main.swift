@@ -299,19 +299,18 @@ struct Entry {
 	}
 
 	func icon() -> NSImage? {
-		guard isDir else {
-			return nil
-		}
 		var img: NSImage? = nil
-		for ext in ["svg", "png", "jpg", "jpeg", "gif", "ico"] {
-			let iconPath = self.url.appendingPathComponent("icon." + ext)
-			if FileManager.default.fileExists(atPath: iconPath.path) {
-				img = NSImage(contentsOf: iconPath)
-				break
+		if isDir {
+			for ext in ["svg", "png", "jpg", "jpeg", "gif", "ico", "icns"] {
+				let iconPath = self.url.appendingPathComponent("icon." + ext)
+				if FileManager.default.fileExists(atPath: iconPath.path) {
+					img = NSImage(contentsOf: iconPath)
+					break
+				}
 			}
-		}
-		if img == nil {
-			img = NSImage(named: NSImage.folderName)
+			if img == nil {
+				img = NSImage(named: NSImage.folderName)
+			}
 		}
 		img?.size = NSMakeSize(16, 16)
 		return img
