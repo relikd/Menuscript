@@ -12,7 +12,7 @@ A menu bar script executor.
 
 Menuscript adds a status bar menu to call custom (user defined) scripts.
 The app reads the content of a directory and adds all executable files to the status menu.
-The screenshot above represents the content of the [res/examples](res/examples/) directory.
+See [res/examples](res/examples/) directory.
 
 
 ## Usage
@@ -68,5 +68,29 @@ These constant strings are defined:
   With this flag, a new `Terminal` window will open and show the activley running script (useful for continuous output like `top` or `netstat -w`, etc.)
 - __[inactive]__: Make menu item non-clickable (will appear greyed out)
 - __[ignore]__: Do not show menu item (no menu entry)
+- __[dyn]__: If set, the script file is responsible to generate its menu items.
+  See [Dynamic Menus](#dynamic-menus).
 
+#### Dynamic Menus
 
+A single script file can generate a whole menu with multiple menu items ("[dyn]" flag).
+As with other scripts, the filename will be used as menu title, in this case a menu folder.
+
+The dynamic script is called with environment variables `ACTION` and `ITEM`.
+Action can be one of: `list` (generate menu), `click` (item clicked), or `icon` (should return image data).
+
+- `ACTION=list` is called without `ITEM` env and should return a list of menu items to display.
+  Just print each menu item on a separate line.
+  Item titles can use the same [modifier flags](#modifier-flags) as normal script files.
+  But contrary to normal script files, sort order is defined by the dynamic script (you should not use numbers).
+- `ACTION=click` always provides an `ITEM` with the currently clicked menu item title (after removing modifier flags).
+  Your script should perform the intended action of the menu item.
+- `ACTION=icon` may return an icon for any menu item (or return nothing to omit the icon).
+  `ITEM` is empty for the folder menu icon and set to the menu title if called for an individual item (same as `click` action).
+  You should return image data, e.g., by printing the content of an image file or returning SVG code.
+
+You could use the icon to display an online status for example.
+Keep in mind, that the menu is generated only once after the status menu opens.
+
+Limitations: dynamic menus cannot have dynamic submenus.
+Also, dynamic items cannot use the verbose flag (for now).

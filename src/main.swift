@@ -60,7 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 			itm.representedObject = entry
 			itm.image = entry.icon()
 
-			if entry.isDir {
+			if entry.isDir || entry.action == .Dynamic {
 				itm.submenu = NSMenu(title: entry.url.path)
 				itm.submenu?.delegate = self
 			} else if entry.action != .Inactive {
@@ -77,7 +77,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 	@objc private func menuItemCallback(sender: NSMenuItem) {
 		let entry = sender.representedObject as! Entry
-		let cmd = Exec(file: entry.url, args: nil)
+		let cmd = Exec(file: entry.url, env: ["ACTION": "click", "ITEM": entry.title])
 		if entry.action == .Text {
 			cmd.editor()
 		} else {
@@ -184,14 +184,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
 struct Exec {
 	let file: URL
-	var args: [String]? = nil
+	var env: [String: String]? = nil
 
 	private func prepare() -> Process {
 		let proc = Process()
-		// proc.environment = ["HOME": "$HOME"]
+		proc.environment = self.env
 		proc.currentDirectoryURL = self.file.deletingLastPathComponent()
 		proc.executableURL = self.file
-		proc.arguments = args
 		return proc
 	}
 
@@ -224,9 +223,13 @@ struct Exec {
 	}
 
 	/// run command and return output
-	func read() -> String {
-		let data = toPipe().fileHandleForReading.readDataToEndOfFile()
-		return String(data: data, encoding: .utf8) ?? ""
+	func readData() -> Data {
+		return toPipe().fileHandleForReading.readDataToEndOfFile()
+	}
+
+	/// run command and return output
+	func readString() -> String {
+		return String(data: readData(), encoding: .utf8) ?? ""
 	}
 }
 
@@ -236,6 +239,14 @@ struct Exec {
 func listDir(_ path: String) -> [Entry] {
 	let target = URL(fileURLWithPath: path)
 	var rv: [Entry] = []
+	// dynamic menu
+	if !target.hasDirectoryPath {
+		Exec(file: target, env: ["ACTION": "list"]).readString().enumerateLines { line, stop in
+			rv.append(Entry(target, title: line))
+		}
+		return rv
+	}
+	// else: static menu
 	for url in (try? FileManager.default.contentsOfDirectory(at: target, includingPropertiesForKeys: [.isDirectoryKey, .isExecutableKey])) ?? [] {
 		if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path) {
 			rv.append(Entry(url))
@@ -253,6 +264,7 @@ enum ActionFlag {
 	case Verbose
 	case Inactive
 	case Ignore
+	case Dynamic
 
 	static func from(_ filename: inout String) -> Self {
 		for (key, flag) in [
@@ -260,6 +272,7 @@ enum ActionFlag {
 			"[verbose]": .Verbose,
 			"[inactive]": .Inactive,
 			"[ignore]": .Ignore,
+			"[dyn]": .Dynamic,
 		] {
 			if filename.contains(key) {
 				filename = filename
@@ -277,21 +290,25 @@ struct Entry {
 	let url: URL
 	let title: String
 	let action: ActionFlag
+	let hasDynParent: Bool
 
 	var isDir: Bool { url.hasDirectoryPath }
 
-	init(_ url: URL) {
+	init(_ url: URL, title: String? = nil) {
+		self.hasDynParent = title != nil
 		self.url = url
 		// TODO: remove file extension?
-		var fname = url.lastPathComponent
+		var fname = title ?? url.lastPathComponent
 		var customOrder = 100
-		var idx = fname.firstIndex { !$0.isWholeNumber } ?? fname.startIndex
-		// sort order
-		if let order = Int(fname[..<idx]) {
-			customOrder = order
-			idx = fname[idx..<fname.endIndex].firstIndex { !$0.isWhitespace } ?? idx
-			idx = fname[idx..<fname.endIndex].firstIndex { !$0.isPunctuation } ?? idx
-			fname = String(fname[idx..<fname.endIndex])
+		if !hasDynParent {
+			var idx = fname.firstIndex { !$0.isWholeNumber } ?? fname.startIndex
+			// sort order
+			if let order = Int(fname[..<idx]) {
+				customOrder = order
+				idx = fname[idx..<fname.endIndex].firstIndex { !$0.isWhitespace } ?? idx
+				idx = fname[idx..<fname.endIndex].firstIndex { !$0.isPunctuation } ?? idx
+				fname = String(fname[idx..<fname.endIndex])
+			}
 		}
 		self.order = customOrder
 		self.action = ActionFlag.from(&fname)
@@ -311,6 +328,9 @@ struct Entry {
 			if img == nil {
 				img = NSImage(named: NSImage.folderName)
 			}
+		} else if action == .Dynamic || hasDynParent {
+			let cmd = Exec(file: self.url, env: ["ACTION": "icon", "ITEM": hasDynParent ? self.title : ""])
+			img = NSImage(data: cmd.readData())
 		}
 		img?.size = NSMakeSize(16, 16)
 		return img

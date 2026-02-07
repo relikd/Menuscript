@@ -1,0 +1,31 @@
+#!/bin/sh
+
+status() {
+	echo '<svg viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="' "$1" '"/></svg>'
+}
+
+case $ACTION in
+	list)
+		echo "Item 1 [verbose]"
+		echo "Item 2 (Text Editor) [txt]"
+		echo "Item 3 [ignore]"
+		echo "Item 4 [txt]"
+		echo "🔴 Status"
+		echo "Time: $(date) [inactive]"
+		;;
+	click)
+		case $ITEM in
+			"Item 1") echo "First item clicked";;
+			"Item 2 (Text Editor)") echo "Second item clicked";;
+			*) echo "else: click >$ITEM<";;
+		esac;;
+	icon)
+		case $ITEM in
+			"") cat Dyn-icon.png;;  # Main menu icon
+			"Item 1") cat Dyn-icon.png;;
+			*Status) status green;;
+		esac;;
+	*)
+		# [verbose] is missing the env variables
+		echo "unsupported action $ACTION, item: $ITEM"
+esac
