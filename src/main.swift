@@ -248,7 +248,9 @@ func listDir(_ path: String) -> [Entry] {
 	}
 	// else: static menu
 	for url in (try? FileManager.default.contentsOfDirectory(at: target, includingPropertiesForKeys: [.isDirectoryKey, .isExecutableKey])) ?? [] {
-		if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path) {
+		if url.hasDirectoryPath || FileManager.default.isExecutableFile(atPath: url.path),
+			!url.lastPathComponent.hasPrefix("_")
+		{
 			rv.append(Entry(url))
 		}
 	}

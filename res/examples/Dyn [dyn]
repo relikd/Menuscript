@@ -21,8 +21,8 @@ case $ACTION in
 		esac;;
 	icon)
 		case $ITEM in
-			"") cat Dyn-icon.png;;  # Main menu icon
-			"Item 1") cat Dyn-icon.png;;
+			"") cat _icons/draw.png;;  # Main menu icon
+			"Item 1") cat _icons/draw.png;;  # relative to root scripts dir
 			*Status) status green;;
 		esac;;
 	*)
