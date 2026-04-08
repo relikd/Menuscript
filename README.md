@@ -1,12 +1,14 @@
-[![macOS 10.13+](https://img.shields.io/badge/macOS-10.13+-888)](#install)
-[![Current release](https://img.shields.io/github/release/relikd/Menuscript)](https://github.com/relikd/Menuscript/releases)
+[![macOS 10.13+](https://img.shields.io/badge/macOS-10.13+-888)](#)
+[![Current release](https://img.shields.io/github/release/relikd/Menuscript)](https://github.com/relikd/Menuscript/releases/latest)
 [![All downloads](https://img.shields.io/github/downloads/relikd/Menuscript/total)](https://github.com/relikd/Menuscript/releases)
 
 <img src="img/icon.svg" width="180" height="180">
 
-# Menuscript
 
-A menu bar script executor.
+Menuscript
+==========
+
+A menu bar custom script executor.
 
 <img src="img/screenshot.png" width="390" height="205">
 
@@ -15,7 +17,33 @@ The app reads the content of a directory and adds all executable files to the st
 See [res/examples](res/examples/) directory.
 
 
-## Usage
+Installation
+------------
+
+Requires macOS High Sierra (10.13) or higher.
+
+```sh
+brew install --cask relikd/tap/menuscript
+xattr -d com.apple.quarantine /Applications/Menuscript.app
+```
+
+or download from [releases](https://github.com/relikd/Menuscript/releases/latest).
+
+### macOS 10.14.3 or lower
+
+You'll need the Swift 5 Runtime Support.
+Download either from [Apple](https://developer.apple.com/download/all/) (developer account required)
+or use [this dmg](https://github.com/relikd/Darker/raw/refs/heads/main/Swift_5_Runtime_Support.dmg).
+
+### Build from source
+
+- Run `make` to create an app bundle.
+- OR: call the script directly (`swift src/main.swift`).
+- OR: create a new Xcode project, select the Command-Line template, and replace the provided `main.swift` with this one.
+
+
+Usage
+-----
 
 1) Define your own script directory in Preferences.
 2) Add subdirectories and scripts to your scripts dir.
