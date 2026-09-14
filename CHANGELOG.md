@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project does adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.2.0] – 2026-09-14
+Added:
+- Menu entry to open scripts dir
+- Example on launching apps (with dynamic app icon)
+
+
 ## [1.1.0] – 2026-02-07
 Added:
 - Dynamic menus (`[dyn]` flag)
@@ -26,4 +32,4 @@ Initial release
 
 [1.1.0]: https://github.com/relikd/Menuscript/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/relikd/Menuscript/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/relikd/Menuscript/compare/1eca425c5f453bc0ed47f780d491656549d3ab53...v1.0.0
+[1.0.0]: https://github.com/relikd/Menuscript/tree/v1.0.0

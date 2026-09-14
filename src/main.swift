@@ -71,6 +71,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 		if menu == self.statusItem.menu {
 			menu.addItem(NSMenuItem.separator())
 			menu.addItem(withTitle: "Preferences", action: #selector(showSettings), keyEquivalent: ",")
+			menu.addItem(withTitle: "Open scripts dir", action: #selector(openStoragePath), keyEquivalent: "o")
 			menu.addItem(withTitle: "Quit", action: #selector(NSApp.terminate), keyEquivalent: "q")
 		}
 	}
