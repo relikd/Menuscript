@@ -1,0 +1,37 @@
+#!/bin/bash
+apps=(
+"/System/Applications/Utilities/Terminal.app"
+"/Applications/Xcode.app/Contents/Applications/FileMerge.app"
+)
+
+shortName() {
+	basename "${x%.app}"
+}
+
+lookup() {
+	for x in "${apps[@]}"; do
+		if [[ $1 == "$(shortName "$x")" ]]; then
+			echo "$x"
+			return
+		fi
+	done
+}
+
+case $ACTION in
+	list)
+		for x in "${apps[@]}"; do
+			shortName "$x"
+		done
+		;;
+	click)
+		open "$(lookup "$ITEM")"
+		;;
+	icon)
+		if [[ $ITEM == "" ]]; then
+			exit 0  # main menu icon
+		fi
+		x=$(lookup "$ITEM")
+		fn=$(defaults read "$x/Contents/Info.plist" CFBundleIconFile)
+		cat "$x/Contents/Resources/$fn.icns"
+		;;
+esac
