@@ -189,7 +189,8 @@ struct Exec {
 
 	private func prepare() -> Process {
 		let proc = Process()
-		proc.environment = self.env
+		proc.environment = ProcessInfo.processInfo.environment
+    		.merging(env ?? [:]) { _, override in override }
 		proc.currentDirectoryURL = self.file.deletingLastPathComponent()
 		proc.executableURL = self.file
 		return proc

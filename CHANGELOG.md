@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project does adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.2.1] – 2026-11-26
+Fixed:
+- keep env variables from parent process (e.g. `$HOME`)
+
+
 ## [1.2.0] – 2026-09-14
 Added:
 - Menu entry to open scripts dir
@@ -30,6 +35,8 @@ Fixed:
 Initial release
 
 
+[1.2.1]: https://github.com/relikd/Menuscript/compare/v1.2.0...v1.2.1
+[1.2.0]: https://github.com/relikd/Menuscript/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/relikd/Menuscript/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/relikd/Menuscript/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/relikd/Menuscript/tree/v1.0.0
